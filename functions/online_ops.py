@@ -4,6 +4,7 @@ import pywhatkit as kit
 from email.message import EmailMessage
 import smtplib
 from decouple import config
+import json
 
 NEWS_API_KEY = config("NEWS_API_KEY")
 OPENWEATHER_APP_ID = config("OPENWEATHER_APP_ID")
@@ -41,9 +42,9 @@ def send_email(receiver_address, subject, message):
         email["Subject"] = subject
         email['From'] = EMAIL
         email.set_content(message)
-        s = smtplib.SMTP("smtp.gmail.com", 587)
+        s = smtplib.SMTP("smtp-relay.sendinblue.com", 587)
         s.starttls()
-        s.login("chiragnahata05@gmail.com", "chiragnahata@2005")
+        s.login(EMAIL, PASSWORD)
         s.send_message(email)
         s.close()
         return True
@@ -59,7 +60,8 @@ def get_latest_news():
     articles = res["articles"]
     for article in articles:
         news_headlines.append(article["title"])
-    return news_headlines[:5]
+    top_five = json.dumps("\n".join(news_headlines[:5]))
+    return top_five
 
 
 def get_weather_report(city):
@@ -78,7 +80,7 @@ def get_trending_movies():
     results = res["results"]
     for r in results:
         trending_movies.append(r["original_title"])
-    return trending_movies[:5]
+    return json.dumps("\n".join(trending_movies[:5]))
 
 
 def get_random_joke():

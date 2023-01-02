@@ -22,9 +22,9 @@ engine.setProperty('rate', 190)
 # Set Volume
 engine.setProperty('volume', 1.0)
 
-# Set Voice (Female)
+# Set Voice (Male)
 voices = engine.getProperty('voices')
-engine.setProperty('voice', voices[1].id)
+engine.setProperty('voice', voices[0].id)
 
 
 # Text to Speech Conversion
