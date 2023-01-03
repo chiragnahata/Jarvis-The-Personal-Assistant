@@ -2,8 +2,11 @@ import os
 import subprocess as sp
 
 paths = {
-    'notepad': "C:\\Program Files\\Notepad\\notepad.exe",
-    'calculator': "C:\\Windows\\System32\\calc.exe"
+    'notepad': "C:\\Chirag Nahata\\Program Files\\Notepad\\notepad.exe",
+    'calculator': "C:\\Chirag Nahata\\Windows\\System32\\calc.exe",
+    'discord': "C:\\Users\\Chirag Nahata\\AppData\\Local\\Discord\\app-0.0.300\\Discord.exe",
+    'camera' : 'start microsoft.windows.camera:',
+    'cmd' : 'start cmd'
 }
 
 

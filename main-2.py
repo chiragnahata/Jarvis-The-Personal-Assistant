@@ -14,6 +14,7 @@ import numpy as np
 import cv2
 import pyautogui
 import os
+from AppOpener import open
 
 sqltor = mysql.connector.connect(
     host="localhost", user="root", password="Mysql@chiragnahata2005", database="jarvis")
@@ -61,7 +62,6 @@ def greet_user():
 # Takes Input from User
 def take_user_input():
     """Takes user input, recognizes it using Speech Recognition module and converts it into text"""
-
     r = sr.Recognizer()
     with sr.Microphone() as source:
         print('Listening....')
@@ -82,7 +82,7 @@ def take_user_input():
             exit()
     except Exception:
         speak('Sorry, I could not understand. Could you please say that again?')
-        query = 'None'
+        return 'None'
     return query
 
 
@@ -344,27 +344,6 @@ if __name__ == '__main__':
                 sqltor.commit()
             except Exception as sqlExcept:
                 print("SQL FAILED>>>>>", sqlExcept)
-
-        elif 'time' in query:
-            strTime = datetime.datetime.now().strftime("%H:%M:%S")
-            speak(f"The time is {strTime}")
-            try:
-                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'time', '{query}', '{strTime}')"
-                cursor.execute(insertQuery)
-                sqltor.commit()
-            except Exception as sqlExcept:
-                print("SQL FAILED>>>>>", sqlExcept)
-
-        elif 'date' in query:
-            today = date.today()
-            strDate = today.strftime("%B %d, %Y")
-            speak(f"The date is {strDate}")
-            try:
-                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'date', '{query}', '{strDate}')"
-                cursor.execute(insertQuery)
-                sqltor.commit()
-            except Exception as sqlExcept:
-                print("SQL FAILED>>>>>", sqlExcept)
         
         elif "take screenshot" in query or "take a screenshot" in query or "capture the screen" in query:
                 speak("Sir, please tell me the name of the screenshot")
@@ -387,85 +366,22 @@ if __name__ == '__main__':
                 except Exception as e:
                     speak("Sorry sir, I couldn't find the screenshot you requested")
 
-        elif "play music" in query or "hit some music" in query:
+        elif "open" in query:
             try:
-                music_dir = "C:\\Users\\Chirag Nahata\\Music"
-                songs = os.listdir(music_dir)
-                os.startfile(os.path.join(music_dir, songs[0]))
+                app = query.replace("open", "")
+                open(app)
+                speak("Opened ", app , "successfully")
             except Exception as e:
-                speak("Sorry sir, I couldn't find any music")   
+                print("Sorry sir, I couldn't open ",app)
             try:
-                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'music', '{query}', '{songs[0]}')"
+                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'open', '{query}', '{app}')"
                 cursor.execute(insertQuery)
                 sqltor.commit()
             except Exception as sqlExcept:
                 print("SQL FAILED>>>>>", sqlExcept)
-
-        elif "write a note" or "take note" in query:
-            try:
-                speak("What should I write, sir")
-                note = take_user_input()
-                file = open('jarvis.txt', 'w')
-                speak("Should I include date and time?")
-                snfm = take_user_input()
-                if 'yes' in snfm or 'sure' in snfm:
-                    strTime = datetime.datetime.now().strftime("%H:%M:%S")
-                    file.write(strTime)
-                    file.write(" :- ")
-                    file.write(note)
-                    speak("Done taking note, sir")
-                else:
-                    file.write(note)
-                    speak("Done taking note, sir")
-            except Exception as e:
-                speak("Sorry sir, I couldn't write that note")
-            try:
-                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'note', '{query}', '{note}')"
-                cursor.execute(insertQuery)
-                sqltor.commit()
-            except Exception as sqlExcept:
-                print("SQL FAILED>>>>>", sqlExcept)
-
-        elif "show notes" in query or "show me the notes" in query:
-            try:
-                speak("Showing notes")
-                file = open("jarvis.txt", "r")
-                print(file.read())
-                speak(file.read(6))
-            except Exception as e:
-                speak("Sorry sir, I couldn't find any notes")
-            try:
-                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'show notes', '{query}', '{file.read()}')"
-                cursor.execute(insertQuery)
-                sqltor.commit()
-            except Exception as sqlExcept:
-                print("SQL FAILED>>>>>", sqlExcept)
-
-        elif "open app" in query:
-            try:
-                speak("Which app should I open, sir")
-                app = take_user_input()
-                os.startfile(app)
-            except Exception as e:
-                speak("Sorry sir, I couldn't open that app")
-            try:
-                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'open app', '{query}', '{app}')"
-                cursor.execute(insertQuery)
-                sqltor.commit()
-            except Exception as sqlExcept:
-                print("SQL FAILED>>>>>", sqlExcept)
-
+                
         elif 'history' in query:
             speak("Here's your history sir")
             cursor.execute("SELECT * FROM all_searches")
             results = cursor.fetchall() or [];
             print(tabulate(results, headers=["Search Type", "Query", "Results"]))
-        
-        elif 'clear history' in query:
-            speak("Are you sure you want to clear your history?")
-            confirm = take_user_input()
-            if 'yes' in confirm or 'sure' in confirm:
-                cursor.execute("DELETE FROM all_searches")
-                speak("Your history has been cleared")
-            else:
-                speak("Your history has not been cleared")
