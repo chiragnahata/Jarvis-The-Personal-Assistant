@@ -10,6 +10,10 @@ from utils import opening_text
 from pprint import pprint
 import mysql.connector
 from tabulate import tabulate
+import numpy as np
+import cv2
+import pyautogui
+import os
 
 sqltor = mysql.connector.connect(
     host="localhost", user="root", password="Mysql@chiragnahata2005", database="jarvis")
@@ -38,7 +42,7 @@ def speak(text):
     """Used to speak whatever text is passed to it"""
 
     engine.say(text)
-    engine.runAndWait()
+    engine.runAndWait()   
 
 # Greet the user
 def greet_user():
@@ -95,19 +99,64 @@ if __name__ == '__main__':
         query = take_user_input().lower()
 
         if 'open notepad' in query:
-            open_notepad()
-
+            try:
+                open_notepad()
+            except Exception as e:
+                print("NOTEPAD FAILED>>>>>", e)
+            try:
+                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'notepad', '{query}', 'opened notepad')"
+                cursor.execute(insertQuery)
+                sqltor.commit()
+            except Exception as sqlExcept:
+                print("SQL FAILED>>>>>", sqlExcept)
+            
         elif 'open discord' in query:
-            open_discord()
+            try:
+                open_discord()
+            except Exception as e:
+                print("DISCORD FAILED>>>>>", e)
+            try:
+                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'discord', '{query}', 'opened discord')"
+                cursor.execute(insertQuery)
+                sqltor.commit()
+            except Exception as sqlExcept:
+                print("SQL FAILED>>>>>", sqlExcept)
 
         elif 'open command prompt' in query or 'open cmd' in query:
-            open_cmd()
+            try:
+                open_cmd()
+            except Exception as e:              
+                print("CMD FAILED>>>>>", e)
+            try:
+                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'cmd', '{query}', 'opened cmd')"
+                cursor.execute(insertQuery)
+                sqltor.commit()
+            except Exception as sqlExcept:
+                print("SQL FAILED>>>>>", sqlExcept)
 
         elif 'open camera' in query:
-            open_camera()
+            try:
+                open_camera()
+            except Exception as e:
+                print("CAMERA FAILED>>>>>", e)
+            try:
+                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'camera', '{query}', 'opened camera')"
+                cursor.execute(insertQuery)
+                sqltor.commit()
+            except Exception as sqlExcept:
+                print("SQL FAILED>>>>>", sqlExcept)
 
         elif 'open calculator' in query:
-            open_calculator()
+            try:
+                open_calculator()
+            except Exception as e:
+                print("CALCULATOR FAILED>>>>>", e)
+            try:
+                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'calculator', '{query}', 'opened calculator')"
+                cursor.execute(insertQuery)
+                sqltor.commit()
+            except Exception as sqlExcept:
+                print("SQL FAILED>>>>>", sqlExcept)
 
         elif 'ip address' in query:
             ip_address = find_my_ip()
@@ -296,8 +345,127 @@ if __name__ == '__main__':
             except Exception as sqlExcept:
                 print("SQL FAILED>>>>>", sqlExcept)
 
+        elif 'time' in query:
+            strTime = datetime.datetime.now().strftime("%H:%M:%S")
+            speak(f"The time is {strTime}")
+            try:
+                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'time', '{query}', '{strTime}')"
+                cursor.execute(insertQuery)
+                sqltor.commit()
+            except Exception as sqlExcept:
+                print("SQL FAILED>>>>>", sqlExcept)
+
+        elif 'date' in query:
+            today = date.today()
+            strDate = today.strftime("%B %d, %Y")
+            speak(f"The date is {strDate}")
+            try:
+                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'date', '{query}', '{strDate}')"
+                cursor.execute(insertQuery)
+                sqltor.commit()
+            except Exception as sqlExcept:
+                print("SQL FAILED>>>>>", sqlExcept)
+        
+        elif "take screenshot" in query or "take a screenshot" in query or "capture the screen" in query:
+                speak("Sir, please tell me the name of the screenshot")
+                name = take_user_input().capitalize()
+                image = pyautogui.screenshot()
+                image = cv2.cvtColor(np.array(image),
+                     cv2.COLOR_RGB2BGR)
+                cv2.imwrite(f"C:\\Users\\Chirag Nahata\\OneDrive\\Pictures\\Screenshots\\{name}.png", image)
+                speak("Sir, I have taken the screenshot and saved it in the screenshots folder")
+
+        elif "show me the screenshot" in query:
+                try:
+                    speak("Sir, please tell me the name of the screenshot")
+                    name = take_user_input().capitalize()
+                    img = cv2.imread(f"C:\\Users\\Chirag Nahata\\OneDrive\\Pictures\\Screenshots\\{name}.png")
+                    cv2.imshow(f"{name}", img)
+                    speak("Here it is sir")
+                    cv2.waitKey(0)
+
+                except Exception as e:
+                    speak("Sorry sir, I couldn't find the screenshot you requested")
+
+        elif "play music" in query or "hit some music" in query:
+            try:
+                music_dir = "C:\\Users\\Chirag Nahata\\Music"
+                songs = os.listdir(music_dir)
+                os.startfile(os.path.join(music_dir, songs[0]))
+            except Exception as e:
+                speak("Sorry sir, I couldn't find any music")   
+            try:
+                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'music', '{query}', '{songs[0]}')"
+                cursor.execute(insertQuery)
+                sqltor.commit()
+            except Exception as sqlExcept:
+                print("SQL FAILED>>>>>", sqlExcept)
+
+        elif "write a note" or "take note" in query:
+            try:
+                speak("What should I write, sir")
+                note = take_user_input()
+                file = open('jarvis.txt', 'w')
+                speak("Should I include date and time?")
+                snfm = take_user_input()
+                if 'yes' in snfm or 'sure' in snfm:
+                    strTime = datetime.datetime.now().strftime("%H:%M:%S")
+                    file.write(strTime)
+                    file.write(" :- ")
+                    file.write(note)
+                    speak("Done taking note, sir")
+                else:
+                    file.write(note)
+                    speak("Done taking note, sir")
+            except Exception as e:
+                speak("Sorry sir, I couldn't write that note")
+            try:
+                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'note', '{query}', '{note}')"
+                cursor.execute(insertQuery)
+                sqltor.commit()
+            except Exception as sqlExcept:
+                print("SQL FAILED>>>>>", sqlExcept)
+
+        elif "show notes" in query or "show me the notes" in query:
+            try:
+                speak("Showing notes")
+                file = open("jarvis.txt", "r")
+                print(file.read())
+                speak(file.read(6))
+            except Exception as e:
+                speak("Sorry sir, I couldn't find any notes")
+            try:
+                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'show notes', '{query}', '{file.read()}')"
+                cursor.execute(insertQuery)
+                sqltor.commit()
+            except Exception as sqlExcept:
+                print("SQL FAILED>>>>>", sqlExcept)
+
+        elif "open app" in query:
+            try:
+                speak("Which app should I open, sir")
+                app = take_user_input()
+                os.startfile(app)
+            except Exception as e:
+                speak("Sorry sir, I couldn't open that app")
+            try:
+                insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'open app', '{query}', '{app}')"
+                cursor.execute(insertQuery)
+                sqltor.commit()
+            except Exception as sqlExcept:
+                print("SQL FAILED>>>>>", sqlExcept)
+
         elif 'history' in query:
             speak("Here's your history sir")
             cursor.execute("SELECT * FROM all_searches")
             results = cursor.fetchall() or [];
             print(tabulate(results, headers=["Search Type", "Query", "Results"]))
+        
+        elif 'clear history' in query:
+            speak("Are you sure you want to clear your history?")
+            confirm = take_user_input()
+            if 'yes' in confirm or 'sure' in confirm:
+                cursor.execute("DELETE FROM all_searches")
+                speak("Your history has been cleared")
+            else:
+                speak("Your history has not been cleared")
