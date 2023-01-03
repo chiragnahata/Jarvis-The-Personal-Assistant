@@ -370,9 +370,9 @@ if __name__ == '__main__':
             try:
                 app = query.replace("open", "")
                 open(app)
-                speak("Opened ", app , "successfully")
+                speak(f"Opening {app}")
             except Exception as e:
-                print("Sorry sir, I couldn't open ",app)
+                speak("Sorry sir, I couldn't find the application you requested")
             try:
                 insertQuery = f"INSERT INTO jarvis.all_searches ( search_type, search_query, result) values ( 'open', '{query}', '{app}')"
                 cursor.execute(insertQuery)
