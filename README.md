@@ -1,5 +1,3 @@
-Read the tutorial series - https://iread.ga/series/10/virtual-personal-assistant-using-python
-# Jarvis - Personal Assistant Python and MySQL Computer Project for Class 12 Annual Exam
 # J.A.R.V.I.S - Personal Assistant
 
 freeCodeCamp article: https://www.freecodecamp.org/news/python-project-how-to-build-your-own-jarvis-using-python/
