@@ -366,6 +366,7 @@ if __name__ == '__main__':
                 except Exception as e:
                     speak("Sorry sir, I couldn't find the screenshot you requested")
 
+        # Another way of opening an app
         elif "open" in query:
             try:
                 app = query.replace("open", "")
