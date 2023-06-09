@@ -19,7 +19,7 @@ pyttsx3==2.90
 PyTweening==1.0.3
 pywhatkit==4.8
 pywin32==301
-requests==2.25.1
+requests==2.31.0
 soupsieve==2.2.1
 SpeechRecognition==3.8.1
 toml==0.10.2
