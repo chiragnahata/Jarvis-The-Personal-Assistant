@@ -1,6 +1,6 @@
 autopep8==1.5.7
 beautifulsoup4==4.9.3
-certifi==2021.5.30
+certifi==2023.7.22
 chardet==4.0.0
 comtypes==1.1.10
 idna==2.10
