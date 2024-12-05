@@ -3,6 +3,7 @@
 ![image](https://user-images.githubusercontent.com/63905783/167343172-23256b14-ad83-40c6-a114-2fe78f1fe86f.png)
 
 freeCodeCamp article: https://www.freecodecamp.org/news/python-project-how-to-build-your-own-jarvis-using-python/
+
 Demo Video: https://vimeo.com/650156113
 ## Project Setup
 
